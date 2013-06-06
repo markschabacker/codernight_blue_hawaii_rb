@@ -1,6 +1,8 @@
 require 'rspec'
 
-describe "The Rate Calculator" do
+require_relative '../../rate_calculator.rb'
+
+describe "The Rate Calculator (Integration)" do
   it "calculates rates correctly for simple input" do
     rate_calculator = RateCalculator.new
 
