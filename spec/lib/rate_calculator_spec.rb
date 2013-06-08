@@ -1,6 +1,4 @@
-require 'rspec'
-
-require_relative '../../rate_calculator.rb'
+require_relative '../spec_helper.rb'
 
 describe "The Rate Calculator" do
   before do
