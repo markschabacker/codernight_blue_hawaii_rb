@@ -30,6 +30,21 @@ class Unit
   end
 end
 
+class Season
+  # TODO: encapsulate day/month pair?
+  # TODO: enforce that start is before end?
+  attr_reader :start_day, :start_month, :end_day, :end_month, :rate
+
+  def initialize(start_day, start_month, end_day, end_month, rate)
+    @start_day = start_day
+    @start_month = start_month
+    @end_day = end_day
+    @end_month = end_month
+    @rate = rate
+  end
+
+end
+
 class ReservationRangeGenerator
 end
 
