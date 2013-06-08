@@ -20,6 +20,16 @@ end
 class UnitHydrator
 end
 
+class Unit
+  attr_reader :name, :seasons, :cleaning_fee
+
+  def initialize(name, seasons, cleaning_fee)
+    @name = name
+    @seasons = seasons
+    @cleaning_fee = cleaning_fee
+  end
+end
+
 class ReservationRangeGenerator
 end
 
