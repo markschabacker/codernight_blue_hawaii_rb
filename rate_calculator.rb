@@ -35,7 +35,7 @@ class Season
   # TODO: enforce that start is before end?
   attr_reader :start_day, :start_month, :end_day, :end_month, :rate
 
-  def initialize(start_day, start_month, end_day, end_month, rate)
+  def initialize(start_month, start_day, end_month, end_day, rate)
     @start_day = start_day
     @start_month = start_month
     @end_day = end_day

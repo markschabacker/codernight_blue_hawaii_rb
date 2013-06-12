@@ -29,11 +29,11 @@ describe "Season" do
   it {should_not respond_to(:rate=) }
 
   it "can be instantiated" do
-    Season.new(@start_day, @start_month, @end_day, @end_month, @rate)
+    Season.new(@start_month, @start_day, @end_month, @end_day, @rate)
   end
 
   it "can be instantiated and set property values" do
-    @season = Season.new(@start_day, @start_month, @end_day, @end_month, @rate)
+    @season = Season.new(@start_month, @start_day, @end_month, @end_day, @rate)
 
     @season.start_day.should == @start_day
     @season.start_month.should == @start_month
