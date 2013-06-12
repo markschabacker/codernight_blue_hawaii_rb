@@ -74,20 +74,11 @@ describe "The Unit Hydrator" do
           unit.seasons.should_not be_nil
           unit.seasons.count.should == 2
 
-          unit.seasons[0].start_month.should == 1
-          unit.seasons[0].start_day.should == 1
-          unit.seasons[0].end_month.should == 1
-          unit.seasons[0].end_day.should == 13
-          unit.seasons[0].rate.should == unit_1_rate
-
-          unit.seasons[1].start_month.should == 1
-          unit.seasons[1].start_day.should == 14
-          unit.seasons[1].end_month.should == 12
-          unit.seasons[1].end_day.should == 31
-          unit.seasons[1].rate.should == unit_2_rate
+          unit.seasons[0].should equal_season(Season.new(1, 1, 1, 13, unit_1_rate))
+          unit.seasons[1].should equal_season(Season.new(1, 14, 12, 31, unit_2_rate))
         end
 
-        it "returns a unit with three seasons if seasons overlap new years" do
+        it "returns a unit with three seasons if seasons overlap new years (same month)" do
           unit_1_rate = 137
           unit_2_rate = 220
 
@@ -99,23 +90,26 @@ describe "The Unit Hydrator" do
           unit.seasons.should_not be_nil
           unit.seasons.count.should == 3
 
-          unit.seasons[0].start_month.should == 1
-          unit.seasons[0].start_day.should == 15
-          unit.seasons[0].end_month.should == 1
-          unit.seasons[0].end_day.should == 30
-          unit.seasons[0].rate.should == unit_1_rate
+          unit.seasons[0].should equal_season(Season.new(1, 15, 1, 30, unit_1_rate))
+          unit.seasons[1].should equal_season(Season.new(1, 1, 1, 14, unit_2_rate))
+          unit.seasons[2].should equal_season(Season.new(1, 31, 12, 31, unit_2_rate))
+        end
 
-          unit.seasons[1].start_month.should == 1
-          unit.seasons[1].start_day.should == 1
-          unit.seasons[1].end_month.should == 1
-          unit.seasons[1].end_day.should == 14
-          unit.seasons[1].rate.should == unit_2_rate
+        it "returns a unit with three seasons if seasons overlap new years (different month)" do
+          unit_1_rate = 137
+          unit_2_rate = 220
 
-          unit.seasons[2].start_month.should == 1
-          unit.seasons[2].start_day.should == 31
-          unit.seasons[2].end_month.should == 12
-          unit.seasons[2].end_day.should == 31
-          unit.seasons[2].rate.should == unit_2_rate
+          units_json_string = %{[{"name":"doesntmatter","seasons":[{"one":{"start":"01-30","end":"03-15","rate":"$#{unit_1_rate}"}},{"two":{"start":"03-16","end":"01-29","rate":"$#{unit_2_rate}"}}]}]}
+
+          unit_results = @unit_hydrator.hydrate_json(units_json_string)
+
+          unit = unit_results[0]
+          unit.seasons.should_not be_nil
+          unit.seasons.count.should == 3
+
+          unit.seasons[0].should equal_season(Season.new(1, 30, 3, 15, unit_1_rate))
+          unit.seasons[1].should equal_season(Season.new(1, 1, 1, 29, unit_2_rate))
+          unit.seasons[2].should equal_season(Season.new(3, 16, 12, 31, unit_2_rate))
         end
       end
     end
