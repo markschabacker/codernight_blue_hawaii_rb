@@ -89,6 +89,15 @@ class Season
 
 end
 
+class DayOfYear
+  attr_reader :month, :day
+
+  def initialize(month, day)
+    @month = month
+    @day = day
+  end
+end
+
 class ReservationRangeGenerator
 end
 
