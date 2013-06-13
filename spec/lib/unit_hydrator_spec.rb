@@ -113,5 +113,30 @@ describe "The Unit Hydrator" do
         end
       end
     end
+
+    it "can hydrate multiple units" do
+      unit_1_name = "unit_1"
+      unit_1_rate = 42
+      unit_1_cleaning_fee = 120
+
+      unit_2_name = "unit_2"
+      unit_2_rate = 314
+      unit_2_cleaning_fee = 67
+
+      units_json_string = %{[{"name":"#{unit_1_name}","rate":"$#{unit_1_rate}","cleaning fee":"$#{unit_1_cleaning_fee}"},{"name":"#{unit_2_name}","rate":"$#{unit_2_rate}","cleaning fee":"$#{unit_2_cleaning_fee}"}]}
+      unit_results = @unit_hydrator.hydrate_json(units_json_string)
+
+      #TODO: lots of assertions
+      unit_results.count.should == 2
+      unit_results[0].name.should == unit_1_name
+      unit_results[0].seasons[0].rate.should == unit_1_rate
+      unit_results[0].seasons[0].should be_a_full_year
+      unit_results[0].cleaning_fee.should == unit_1_cleaning_fee
+
+      unit_results[1].name.should == unit_2_name
+      unit_results[1].seasons[0].rate.should == unit_2_rate
+      unit_results[1].seasons[0].should be_a_full_year
+      unit_results[1].cleaning_fee.should == unit_2_cleaning_fee
+    end
   end
 end

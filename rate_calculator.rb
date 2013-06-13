@@ -29,6 +29,7 @@ class UnitHydrator
 
       seasons = []
 
+      #TODO: encapsulate season reading?
       json_seasons = unit_dict["seasons"]
       unless json_seasons.nil?
         json_seasons.each do |json_season_dict|
