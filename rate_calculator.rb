@@ -37,17 +37,20 @@ class UnitHydrator
             start_month, start_day = json_season["start"].split("-").map { |int_str| int_str.to_i }
             end_month, end_day = json_season["end"].split("-").map { |int_str| int_str.to_i }
 
+            start_day_of_year = DayOfYear.new(start_month, start_day)
+            end_day_of_year = DayOfYear.new(end_month, end_day)
+
             if(end_month < start_month) || ((end_month == start_month) && (end_day < start_day))
-              seasons << Season.new(1, 1, end_month, end_day, rate)
-              seasons << Season.new(start_month, start_day, 12, 31, rate)
+              seasons << Season.new(DayOfYear.first_day, end_day_of_year, rate)
+              seasons << Season.new(start_day_of_year, DayOfYear.last_day, rate)
             else
-              seasons << Season.new(start_month, start_day, end_month, end_day, rate)
+              seasons << Season.new(start_day_of_year, end_day_of_year, rate)
             end
           end
         end
       else
         rate = BigDecimal.new(unit_dict["rate"][1..-1])
-        seasons << Season.new(1, 1, 12, 31, rate)
+        seasons << Season.new(DayOfYear.first_day, DayOfYear.last_day, rate)
       end
 
       cleaning_fee_string = unit_dict["cleaning fee"]
@@ -75,15 +78,12 @@ class Unit
 end
 
 class Season
-  # TODO: encapsulate day/month pair?
   # TODO: enforce that start is before end?
-  attr_reader :start_day, :start_month, :end_day, :end_month, :rate
+  attr_reader :start_day_of_year, :end_day_of_year, :rate
 
-  def initialize(start_month, start_day, end_month, end_day, rate)
-    @start_day = start_day
-    @start_month = start_month
-    @end_day = end_day
-    @end_month = end_month
+  def initialize(start_day_of_year, end_day_of_year, rate)
+    @start_day_of_year = start_day_of_year
+    @end_day_of_year = end_day_of_year
     @rate = rate
   end
 

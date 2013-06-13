@@ -74,8 +74,8 @@ describe "The Unit Hydrator" do
           unit.seasons.should_not be_nil
           unit.seasons.count.should == 2
 
-          unit.seasons[0].should equal_season(Season.new(1, 1, 1, 13, unit_1_rate))
-          unit.seasons[1].should equal_season(Season.new(1, 14, 12, 31, unit_2_rate))
+          unit.seasons[0].should equal_season(Season.new(DayOfYear.new(1, 1), DayOfYear.new(1, 13), unit_1_rate))
+          unit.seasons[1].should equal_season(Season.new(DayOfYear.new(1, 14), DayOfYear.new(12, 31), unit_2_rate))
         end
 
         it "returns a unit with three seasons if seasons overlap new years (same month)" do
@@ -90,9 +90,9 @@ describe "The Unit Hydrator" do
           unit.seasons.should_not be_nil
           unit.seasons.count.should == 3
 
-          unit.seasons[0].should equal_season(Season.new(1, 15, 1, 30, unit_1_rate))
-          unit.seasons[1].should equal_season(Season.new(1, 1, 1, 14, unit_2_rate))
-          unit.seasons[2].should equal_season(Season.new(1, 31, 12, 31, unit_2_rate))
+          unit.seasons[0].should equal_season(Season.new(DayOfYear.new(1, 15), DayOfYear.new(1, 30), unit_1_rate))
+          unit.seasons[1].should equal_season(Season.new(DayOfYear.new(1, 1), DayOfYear.new(1, 14), unit_2_rate))
+          unit.seasons[2].should equal_season(Season.new(DayOfYear.new(1, 31), DayOfYear.new(12, 31), unit_2_rate))
         end
 
         it "returns a unit with three seasons if seasons overlap new years (different month)" do
@@ -107,9 +107,9 @@ describe "The Unit Hydrator" do
           unit.seasons.should_not be_nil
           unit.seasons.count.should == 3
 
-          unit.seasons[0].should equal_season(Season.new(1, 30, 3, 15, unit_1_rate))
-          unit.seasons[1].should equal_season(Season.new(1, 1, 1, 29, unit_2_rate))
-          unit.seasons[2].should equal_season(Season.new(3, 16, 12, 31, unit_2_rate))
+          unit.seasons[0].should equal_season(Season.new(DayOfYear.new(1, 30), DayOfYear.new(3, 15), unit_1_rate))
+          unit.seasons[1].should equal_season(Season.new(DayOfYear.new(1, 1), DayOfYear.new(1, 29), unit_2_rate))
+          unit.seasons[2].should equal_season(Season.new(DayOfYear.new(3, 16), DayOfYear.new(12, 31), unit_2_rate))
         end
       end
     end
