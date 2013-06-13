@@ -96,6 +96,17 @@ class DayOfYear
     @month = month
     @day = day
   end
+
+  @first_day = DayOfYear.new(1, 1)
+  @last_day = DayOfYear.new(12, 31)
+
+  def self.first_day
+    @first_day
+  end
+
+  def self.last_day
+    @last_day
+  end
 end
 
 class ReservationRangeGenerator

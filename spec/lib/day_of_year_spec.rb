@@ -27,4 +27,15 @@ describe "Day of Year" do
     day.day.should == @day
   end
 
+  it "defines the first day of the year" do
+    first_day = DayOfYear.first_day
+    first_day.month.should == 1
+    first_day.day.should == 1
+  end
+
+  it "defines the last day of the year" do
+    last_day = DayOfYear.last_day
+    last_day.month.should == 12
+    last_day.day.should == 31
+  end
 end
