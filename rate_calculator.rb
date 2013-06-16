@@ -111,6 +111,10 @@ class DayOfYear
 end
 
 class ReservationRangeGenerator
+  def generate(date_range_string)
+    start_date, end_date = date_range_string.split("-").map { |x| Date.parse(x) }
+    start_date.upto(end_date)
+  end
 end
 
 class UnitRateCalculator
