@@ -28,4 +28,26 @@ describe "Season" do
     season.end_day_of_year.should == end_day_of_year
     season.rate.should == rate
   end
+
+  describe "when calculating contained dates" do
+    start_date = Date.parse("2013/04/09")
+    end_date = Date.parse("2013/05/15")
+    season = Season.new(start_date, end_date, :rate_not_used)
+
+    {start_date: start_date,
+    date_after_start_date: start_date + 1,
+    date_before_end_date: end_date - 1,
+    end_date: end_date }.each do |desc, date|
+      it "returns true for a contained date (#{desc})" do
+        season.contains(date).should be_true
+      end
+    end
+
+    {date_before_start_date: start_date - 1,
+    date_after_end_date: end_date + 1 }.each do |desc, date|
+      it "returns false for an outside date (#{desc})" do
+        season.contains(date).should be_false
+      end
+    end
+  end
 end

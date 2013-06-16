@@ -88,6 +88,12 @@ class Season
     @rate = rate
   end
 
+  def contains(date)
+    first_day = Date.new(date.year, @start_day_of_year.month, @start_day_of_year.day)
+    last_day = Date.new(date.year, @end_day_of_year.month, @end_day_of_year.day)
+
+    first_day <= date && date <= last_day
+  end
 end
 
 class DayOfYear
