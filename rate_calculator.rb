@@ -124,4 +124,23 @@ class ReservationRangeGenerator
 end
 
 class UnitRateCalculator
+  def initialize(unit, reservation_range, tax_rate)
+    @unit = unit
+    @reservation_range = reservation_range
+    @tax_rate = tax_rate
+  end
+
+  def base_rate
+    total = 0
+    @reservation_range.take(@reservation_range.count - 1).each do |date|
+      @unit.seasons.each do |season|
+        total += season.rate if season.contains(date)
+      end
+    end
+    total += @unit.cleaning_fee
+  end
+
+  def calculate
+    base_rate * @tax_rate
+  end
 end
