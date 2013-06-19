@@ -77,6 +77,13 @@ class Unit
     @seasons = seasons
     @cleaning_fee = cleaning_fee
   end
+
+  def rate_for_date(date)
+    @seasons.each do |season|
+      return season.rate if season.contains(date)
+    end
+    0
+  end
 end
 
 class Season
@@ -134,9 +141,7 @@ class UnitRateCalculator
   def base_rate
     total = 0
     @reservation_range.take(@reservation_range.count - 1).each do |date|
-      @unit.seasons.each do |season|
-        total += season.rate if season.contains(date)
-      end
+      total += @unit.rate_for_date(date)
     end
     total += @unit.cleaning_fee
   end

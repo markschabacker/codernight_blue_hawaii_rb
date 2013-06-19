@@ -9,65 +9,52 @@ describe "The Unit Rate Calculator" do
     UnitRateCalculator.new(unit, reservation_range, tax_rate).should_not be_nil
   end
 
-  # TODO: These tests don't smell right.  They contain a lot of carnal knowledge.
   describe "when calculating rates" do
     describe "base rate calculation" do
-      describe "when all dates are in a single season" do
-        let (:rate) { 7.0 }
-        let (:cleaning_fee) { 5.0 }
-        let (:num_days) { 2 }
+      it "includes the unit's rate_for_date value for each date not including the last (constant)" do
+        constant_rate = 7.0
+        zero_cleaning_fee = 0.0;
+        num_days = 2
 
-        it "returns ((rate) x (number of days)) + cleaning fee" do
-          season = Object.new
-          season.stub(:rate) { rate }
-          season.stub(:contains) { true }
+        unit = Object.new
+        unit.stub(:rate_for_date) { constant_rate }
+        unit.stub(:cleaning_fee) { zero_cleaning_fee }
 
-          unit = Object.new
-          unit.stub(:seasons) { [season] }
-          unit.stub(:cleaning_fee) { cleaning_fee }
+        res_range = Date.today.upto(Date.today + num_days)
 
-          res_range = Date.today.upto(Date.today + num_days)
-
-          unit_rate_calculator = UnitRateCalculator.new(unit, res_range, tax_rate)
-          unit_rate_calculator.base_rate.should == (rate * num_days) + cleaning_fee
-        end
+        unit_rate_calculator = UnitRateCalculator.new(unit, res_range, tax_rate)
+        unit_rate_calculator.base_rate.should == (constant_rate * num_days)
       end
 
-      describe "when dates cross seasons" do
-        it "works correctly" do
-          res_range = Date.today.upto(Date.today + 3)
-          first_day = res_range.to_a[0]
-          second_day = res_range.to_a[1]
-          third_day = res_range.to_a[2]
+      it "includes the unit's rate_for_date for each date not including the last (variable)" do
+        res_range = Date.today.upto(Date.today + 3)
+        rates = { res_range.to_a[0] => 1,
+                  res_range.to_a[1] => 3,
+                  res_range.to_a[2] => 5,
+                  res_range.to_a[3] => 7 }
 
-          rate0 = 1
-          season0 = Object.new
-          season0.stub(:rate) { rate0 }
-          season0.stub(:contains) do |arg|
-            arg == first_day
-          end
-
-          rate1 = 3
-          season1 = Object.new
-          season1.stub(:rate) { rate1 }
-          season1.stub(:contains) do |arg|
-            arg == second_day
-          end
-
-          rate2 = 5
-          season2 = Object.new
-          season2.stub(:rate) { rate2 }
-          season2.stub(:contains) do |arg|
-            arg == third_day
-          end
-
-          unit = Object.new
-          unit.stub(:seasons) { [season0, season1, season2] }
-          unit.stub(:cleaning_fee) { 0 }
-
-          unit_rate_calculator = UnitRateCalculator.new(unit, res_range, tax_rate)
-          unit_rate_calculator.base_rate.should == rate0 + rate1 + rate2
+        unit = Object.new
+        unit.stub(:cleaning_fee) { 0 }
+        unit.stub(:rate_for_date) do |arg|
+          rates[arg]
         end
+
+        unit_rate_calculator = UnitRateCalculator.new(unit, res_range, tax_rate)
+        unit_rate_calculator.base_rate.should == rates.values.take(rates.count - 1).inject{ |sum, x| sum + x }
+      end
+
+      it "includes the cleaning fee" do
+        cleaning_fee = 42.0
+        num_days = 2
+
+        unit = Object.new
+        unit.stub(:rate_for_date) { 0 }
+        unit.stub(:cleaning_fee) { cleaning_fee }
+
+        res_range = Date.today.upto(Date.today + num_days)
+
+        unit_rate_calculator = UnitRateCalculator.new(unit, res_range, tax_rate)
+        unit_rate_calculator.base_rate.should == cleaning_fee
       end
     end
 

@@ -29,4 +29,41 @@ describe "A Rental Unit" do
     unit.seasons.should == @seasons
     unit.cleaning_fee.should == @cleaning_fee
   end
+
+  describe "when calculating the rate for a date" do
+    it "returns 0 if no seasons contain the date" do
+      unit = Unit.new(@name, [], @cleaning_fee)
+      unit.rate_for_date(Date.today).should == 0
+    end
+
+    it "returns the rate for the unit's only season if there is only one season" do
+      rate = :rate
+      season = Object.new
+      season.stub(:contains) { true }
+      season.stub(:rate) { rate }
+
+      unit = Unit.new(@name, [season], @cleaning_fee)
+      unit.rate_for_date(Date.today).should == rate
+    end
+
+    it "returns the rate for the first matching season if there are multiple seasons" do
+      rate0 = :rate0
+      season0 = Object.new
+      season0.stub(:contains) { false }
+      season0.stub(:rate) { rate0 }
+
+      rate1 = :rate1
+      season1 = Object.new
+      season1.stub(:contains) { true }
+      season1.stub(:rate) { rate1 }
+
+      rate2 = :rate2
+      season2 = Object.new
+      season2.stub(:contains) { true }
+      season2.stub(:rate) { rate2 }
+
+      unit = Unit.new(@name, [season0, season1, season2], @cleaning_fee)
+      unit.rate_for_date(Date.today).should == rate1
+    end
+  end
 end
