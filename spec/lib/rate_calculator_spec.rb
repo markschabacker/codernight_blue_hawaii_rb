@@ -16,7 +16,7 @@ describe "The Rate Calculator" do
     ReservationRangeGenerator.stub(:new) { @reservation_range_generator }
 
     @reservation_range = Object.new
-    @reservation_range_generator.stub(:generate_date_range) { @reservation_range }
+    @reservation_range_generator.stub(:generate) { @reservation_range }
 
   end
 
@@ -30,7 +30,7 @@ describe "The Rate Calculator" do
 
     it "sends the reservation string to a ReservationRangeGenerator" do
       @reservation_range_generator = Object.new
-      @reservation_range_generator.should_receive(:generate_date_range).with(@reservation_string_input).and_return(@reservation_range)
+      @reservation_range_generator.should_receive(:generate).with(@reservation_string_input).and_return(@reservation_range)
 
       RateCalculator.new.calculate_rates(@units_json_string_input, @reservation_string_input, @tax_rate)
     end
@@ -53,7 +53,7 @@ describe "The Rate Calculator" do
 
         unit_return_value = Object.new
         unit_return_values[unit] = unit_return_value
-        unit_rate_calculator.should_receive(:calculate_rate).and_return(unit_return_value)
+        unit_rate_calculator.should_receive(:calculate).and_return(unit_return_value)
       end
 
       calculated_rates = RateCalculator.new.calculate_rates(@units_json_string_input, @reservation_string_input, @tax_rate)
