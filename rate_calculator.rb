@@ -2,6 +2,17 @@ require 'bigdecimal'
 require 'date'
 require 'JSON'
 
+def command_line_run
+  units_json_string = File.open("vacation_rentals.json").read
+  reservation_string = File.open("input.txt").read
+  tax_rate = BigDecimal.new("1.0411416")
+
+  rates = RateCalculator.new.calculate_rates(units_json_string, reservation_string, tax_rate)
+  rates.each do |property, rate|
+    puts "#{property} $#{'%.2f' % rate }"
+  end
+end
+
 class RateCalculator
   def calculate_rates(units_json_string, reservation_string, tax_rate)
     unit_hydrator = UnitHydrator.new
@@ -151,11 +162,4 @@ class UnitRateCalculator
   end
 end
 
-units_json_string = File.open("vacation_rentals.json").read
-reservation_string = File.open("input.txt").read
-tax_rate = BigDecimal.new("1.0411416")
-
-rates = RateCalculator.new.calculate_rates(units_json_string, reservation_string, tax_rate)
-rates.each do |property, rate|
-  puts "#{property} $#{'%.2f' % rate }"
-end
+command_line_run if __FILE__==$0
