@@ -1,5 +1,6 @@
-require 'JSON'
 require 'bigdecimal'
+require 'date'
+require 'JSON'
 
 class RateCalculator
   def calculate_rates(units_json_string, reservation_string, tax_rate)
