@@ -50,4 +50,27 @@ describe "Season" do
       end
     end
   end
+
+  describe "the == method" do
+    let (:start_day_of_year) { :start_day_of_year }
+    let (:end_day_of_year) { :end_day_of_year }
+    let (:rate) { :rate }
+    let (:ref_season) { Season.new(start_day_of_year, end_day_of_year, rate) }
+
+    it "returns true if start_day_of_year, end_day_of_year, and rate are the same" do
+      Season.new(start_day_of_year, end_day_of_year, rate).should == ref_season
+    end
+
+    it "returns false if start_day_of_year is different" do
+      Season.new(:other_start, end_day_of_year, rate).should_not == ref_season
+    end
+
+    it "returns false if end_day_of_year is different" do
+      Season.new(start_day_of_year, :other_end, rate).should_not == ref_season
+    end
+
+    it "returns false if rate is different" do
+      Season.new(start_day_of_year, end_day_of_year, :other_rate).should_not == ref_season
+    end
+  end
 end

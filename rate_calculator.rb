@@ -70,6 +70,12 @@ class Season
 
     first_day <= date && date <= last_day
   end
+
+  def ==(other)
+    other.start_day_of_year == @start_day_of_year \
+      && other.end_day_of_year == @end_day_of_year \
+      && other.rate == @rate
+  end
 end
 
 class Unit
