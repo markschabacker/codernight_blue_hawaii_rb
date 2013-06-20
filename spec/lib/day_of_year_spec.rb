@@ -38,4 +38,22 @@ describe "Day of Year" do
     last_day.month.should == 12
     last_day.day.should == 31
   end
+
+  describe "the == method" do
+    let (:month) { :month }
+    let (:day) { :day }
+    let (:ref_day_of_year) { DayOfYear.new(month, day) }
+
+    it "returns true if month and day are the same" do
+      DayOfYear.new(month, day).should == ref_day_of_year
+    end
+
+    it "returns false if month is different" do
+      DayOfYear.new(:other_month, day).should_not == ref_day_of_year
+    end
+
+    it "returns false if day is different" do
+      DayOfYear.new(month, :other_day).should_not == ref_day_of_year
+    end
+  end
 end

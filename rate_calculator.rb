@@ -38,6 +38,10 @@ class DayOfYear
     @day = day
   end
 
+  def ==(other)
+    other.month == @month && other.day == @day
+  end
+
   @first_day = DayOfYear.new(1, 1)
   @last_day = DayOfYear.new(12, 31)
 
