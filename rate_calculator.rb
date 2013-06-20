@@ -30,6 +30,61 @@ class RateCalculator
   end
 end
 
+class DayOfYear
+  attr_reader :month, :day
+
+  def initialize(month, day)
+    @month = month
+    @day = day
+  end
+
+  @first_day = DayOfYear.new(1, 1)
+  @last_day = DayOfYear.new(12, 31)
+
+  def self.first_day
+    @first_day
+  end
+
+  def self.last_day
+    @last_day
+  end
+end
+
+class Season
+  # TODO: enforce that start is before end?
+  attr_reader :start_day_of_year, :end_day_of_year, :rate
+
+  def initialize(start_day_of_year, end_day_of_year, rate)
+    @start_day_of_year = start_day_of_year
+    @end_day_of_year = end_day_of_year
+    @rate = rate
+  end
+
+  def contains(date)
+    first_day = Date.new(date.year, @start_day_of_year.month, @start_day_of_year.day)
+    last_day = Date.new(date.year, @end_day_of_year.month, @end_day_of_year.day)
+
+    first_day <= date && date <= last_day
+  end
+end
+
+class Unit
+  attr_reader :name, :seasons, :cleaning_fee
+
+  def initialize(name, seasons, cleaning_fee)
+    @name = name
+    @seasons = seasons
+    @cleaning_fee = cleaning_fee
+  end
+
+  def rate_for_date(date)
+    @seasons.each do |season|
+      return season.rate if season.contains(date)
+    end
+    0
+  end
+end
+
 class UnitHydrator
   def hydrate_json(units_json_string)
     return [] if units_json_string.nil? || (0 == units_json_string.length)
@@ -101,61 +156,6 @@ class UnitHydrator
     def split_month_and_day(month_day_string)
       month_day_string.split("-").map { |int_str| int_str.to_i }
     end
-end
-
-class Unit
-  attr_reader :name, :seasons, :cleaning_fee
-
-  def initialize(name, seasons, cleaning_fee)
-    @name = name
-    @seasons = seasons
-    @cleaning_fee = cleaning_fee
-  end
-
-  def rate_for_date(date)
-    @seasons.each do |season|
-      return season.rate if season.contains(date)
-    end
-    0
-  end
-end
-
-class Season
-  # TODO: enforce that start is before end?
-  attr_reader :start_day_of_year, :end_day_of_year, :rate
-
-  def initialize(start_day_of_year, end_day_of_year, rate)
-    @start_day_of_year = start_day_of_year
-    @end_day_of_year = end_day_of_year
-    @rate = rate
-  end
-
-  def contains(date)
-    first_day = Date.new(date.year, @start_day_of_year.month, @start_day_of_year.day)
-    last_day = Date.new(date.year, @end_day_of_year.month, @end_day_of_year.day)
-
-    first_day <= date && date <= last_day
-  end
-end
-
-class DayOfYear
-  attr_reader :month, :day
-
-  def initialize(month, day)
-    @month = month
-    @day = day
-  end
-
-  @first_day = DayOfYear.new(1, 1)
-  @last_day = DayOfYear.new(12, 31)
-
-  def self.first_day
-    @first_day
-  end
-
-  def self.last_day
-    @last_day
-  end
 end
 
 class ReservationRangeGenerator
