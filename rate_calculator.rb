@@ -32,52 +32,75 @@ end
 
 class UnitHydrator
   def hydrate_json(units_json_string)
-    ret_array = []
-    return ret_array if units_json_string.nil? || (0 == units_json_string.length)
+    return [] if units_json_string.nil? || (0 == units_json_string.length)
 
-    unit_dict_array = JSON.parse(units_json_string)
-    unit_dict_array.each do |unit_dict|
-      name = unit_dict["name"]
+    JSON.parse(units_json_string).map { |unit_dict| parse_unit(unit_dict) }
+  end
 
+  private
+    def parse_unit(unit_dict)
+      name = parse_name(unit_dict)
+      seasons = parse_seasons(unit_dict)
+      cleaning_fee = parse_cleaning_fee(unit_dict)
+
+      Unit.new(name, seasons, cleaning_fee)
+    end
+
+    def parse_name(unit_dict)
+      unit_dict["name"]
+    end
+
+    def parse_seasons(unit_dict)
       seasons = []
 
-      #TODO: encapsulate season reading?
-      json_seasons = unit_dict["seasons"]
-      unless json_seasons.nil?
+      unless (json_seasons = unit_dict["seasons"]).nil?
         json_seasons.each do |json_season_dict|
           json_season_dict.values.each do |json_season|
-            rate = BigDecimal.new(json_season["rate"][1..-1])
-            start_month, start_day = json_season["start"].split("-").map { |int_str| int_str.to_i }
-            end_month, end_day = json_season["end"].split("-").map { |int_str| int_str.to_i }
-
-            start_day_of_year = DayOfYear.new(start_month, start_day)
-            end_day_of_year = DayOfYear.new(end_month, end_day)
-
-            if(end_month < start_month) || ((end_month == start_month) && (end_day < start_day))
-              seasons << Season.new(DayOfYear.first_day, end_day_of_year, rate)
-              seasons << Season.new(start_day_of_year, DayOfYear.last_day, rate)
-            else
-              seasons << Season.new(start_day_of_year, end_day_of_year, rate)
-            end
+            seasons.push(*parse_season(json_season))
           end
         end
       else
-        rate = BigDecimal.new(unit_dict["rate"][1..-1])
+        rate = parse_rate(unit_dict)
         seasons << Season.new(DayOfYear.first_day, DayOfYear.last_day, rate)
       end
 
-      cleaning_fee_string = unit_dict["cleaning fee"]
+      seasons
+    end
+
+    def parse_season(json_season)
+      rate = parse_rate(json_season)
+
+      start_month, start_day = split_month_and_day(json_season["start"])
+      start_day_of_year = DayOfYear.new(start_month, start_day)
+
+      end_month, end_day = split_month_and_day(json_season["end"])
+      end_day_of_year = DayOfYear.new(end_month, end_day)
+
+      overlaps_new_year = (end_month < start_month) || ((end_month == start_month) && (end_day < start_day))
+      if(overlaps_new_year)
+        return [ Season.new(DayOfYear.first_day, end_day_of_year, rate),
+                 Season.new(start_day_of_year, DayOfYear.last_day, rate) ]
+      else
+        return Season.new(start_day_of_year, end_day_of_year, rate)
+      end
+    end
+
+    def parse_rate(json_dict)
+      BigDecimal.new(json_dict["rate"][1..-1])
+    end
+
+    def parse_cleaning_fee(json_dict)
+      cleaning_fee_string = json_dict["cleaning fee"]
       if cleaning_fee_string.nil?
         cleaning_fee = 0
       else
         cleaning_fee = BigDecimal.new(cleaning_fee_string[1..-1])
       end
-
-      ret_array << Unit.new(name, seasons, cleaning_fee)
     end
 
-    ret_array
-  end
+    def split_month_and_day(month_day_string)
+      month_day_string.split("-").map { |int_str| int_str.to_i }
+    end
 end
 
 class Unit
